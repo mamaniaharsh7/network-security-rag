@@ -1,0 +1,264 @@
+{
+  "metadata": {
+    "query_file": "suspicious_domains.json",
+    "query_file_path": "queries_minimal/suspicious_domains.json",
+    "execution_time": "2025-08-09T20:44:34.883462",
+    "completion_time": "2025-08-09T20:44:35.107332",
+    "elasticsearch_url": "https://localhost:9200/logs-*/_search",
+    "elasticsearch_host": "https://localhost:9200",
+    "elasticsearch_username": "admin@castlecf.test.com",
+    "status_code": 200,
+    "execution_duration_ms": 223.87,
+    "elasticsearch_took_ms": 56,
+    "index_used": "logs-*",
+    "time_range_applied": {
+      "field": "@timestamp",
+      "gte": "2024-08-01T00:00:00",
+      "lte": "2024-09-30T23:59:59"
+    }
+  },
+  "query": {
+    "query": {
+      "bool": {
+        "must": [
+          {
+            "terms": {
+              "destination.port": [
+                80,
+                443
+              ]
+            }
+          },
+          {
+            "range": {
+              "@timestamp": {
+                "gte": "2024-08-01T00:00:00",
+                "lte": "2024-09-30T23:59:59"
+              }
+            }
+          }
+        ],
+        "must_not": [
+          {
+            "wildcard": {
+              "message": "*google.com*"
+            }
+          },
+          {
+            "wildcard": {
+              "message": "*googleapis.com*"
+            }
+          },
+          {
+            "wildcard": {
+              "message": "*googleusercontent.com*"
+            }
+          },
+          {
+            "wildcard": {
+              "message": "*doubleclick.net*"
+            }
+          },
+          {
+            "wildcard": {
+              "message": "*msn.com*"
+            }
+          },
+          {
+            "wildcard": {
+              "message": "*bing.com*"
+            }
+          },
+          {
+            "wildcard": {
+              "message": "*clarity.ms*"
+            }
+          },
+          {
+            "wildcard": {
+              "message": "*microsoft.com*"
+            }
+          },
+          {
+            "wildcard": {
+              "message": "*microsoft.net*"
+            }
+          },
+          {
+            "wildcard": {
+              "message": "*microsoftapp.net*"
+            }
+          },
+          {
+            "wildcard": {
+              "message": "*microsoftonline.com*"
+            }
+          },
+          {
+            "wildcard": {
+              "message": "*msedge.net*"
+            }
+          },
+          {
+            "wildcard": {
+              "message": "*azureedge.net*"
+            }
+          },
+          {
+            "wildcard": {
+              "message": "*live.com*"
+            }
+          },
+          {
+            "wildcard": {
+              "message": "*office.com*"
+            }
+          },
+          {
+            "wildcard": {
+              "message": "*windows.com*"
+            }
+          },
+          {
+            "wildcard": {
+              "message": "*adobe.com*"
+            }
+          },
+          {
+            "wildcard": {
+              "message": "*liveperson.net*"
+            }
+          },
+          {
+            "wildcard": {
+              "message": "*lpsnmedia.net*"
+            }
+          },
+          {
+            "wildcard": {
+              "message": "*linkedin.com*"
+            }
+          },
+          {
+            "wildcard": {
+              "message": "*skype.com*"
+            }
+          },
+          {
+            "wildcard": {
+              "message": "*nvidia.com*"
+            }
+          },
+          {
+            "wildcard": {
+              "message": "*azure.com*"
+            }
+          },
+          {
+            "wildcard": {
+              "message": "*yahoo.com*"
+            }
+          },
+          {
+            "wildcard": {
+              "message": "*facebook.com*"
+            }
+          }
+        ]
+      }
+    },
+    "aggs": {
+      "domains": {
+        "terms": {
+          "script": {
+            "source": "if (doc['message.keyword'].size() > 0) { def msg = doc['message.keyword'].value.toLowerCase(); def server_name_pattern = /\\\"server_name\\\":\\\"([^\\\"]+)\\\"/; def matcher = server_name_pattern.matcher(msg); if (matcher.find()) { return matcher.group(1); } def sni_pattern = /server_name:\\s*([^\\s,\\r\\n]+)/; def matcher2 = sni_pattern.matcher(msg); if (matcher2.find()) { return matcher2.group(1); } } return null;"
+          },
+          "size": 50,
+          "min_doc_count": 1
+        }
+      }
+    },
+    "_source": [
+      "message",
+      "@timestamp",
+      "source.ip",
+      "destination.ip"
+    ],
+    "size": 0
+  },
+  "response": {
+    "took": 56,
+    "timed_out": false,
+    "_shards": {
+      "total": 66,
+      "successful": 66,
+      "skipped": 0,
+      "failed": 0
+    },
+    "hits": {
+      "total": {
+        "value": 1673,
+        "relation": "eq"
+      },
+      "max_score": null,
+      "hits": []
+    },
+    "aggregations": {
+      "domains": {
+        "doc_count_error_upper_bound": 0,
+        "sum_other_doc_count": 0,
+        "buckets": [
+          {
+            "key": "img-s-msn-com.akamaized.net",
+            "doc_count": 3
+          },
+          {
+            "key": "oneclient.sfx.ms",
+            "doc_count": 3
+          },
+          {
+            "key": "sso.godaddy.com",
+            "doc_count": 3
+          },
+          {
+            "key": "r.msftstatic.com",
+            "doc_count": 2
+          },
+          {
+            "key": "weathermapdata.blob.core.windows.net",
+            "doc_count": 2
+          },
+          {
+            "key": "www.bellantonicioccolato.it",
+            "doc_count": 2
+          },
+          {
+            "key": "business.checkfedexexp.com",
+            "doc_count": 1
+          },
+          {
+            "key": "bzib.nelreports.net",
+            "doc_count": 1
+          },
+          {
+            "key": "default.exp-tas.com",
+            "doc_count": 1
+          },
+          {
+            "key": "ecn-us.dev.virtualearth.net",
+            "doc_count": 1
+          },
+          {
+            "key": "ow1.res.office365.com",
+            "doc_count": 1
+          },
+          {
+            "key": "sb.scorecardresearch.com",
+            "doc_count": 1
+          }
+        ]
+      }
+    }
+  },
+  "success": true
+}

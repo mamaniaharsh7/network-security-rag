@@ -1,0 +1,168 @@
+{
+  "metadata": {
+    "query_file": "high_activity_external_dest.json",
+    "query_file_path": "queries_minimal/high_activity_external_dest.json",
+    "execution_time": "2025-08-09T20:44:33.608761",
+    "completion_time": "2025-08-09T20:44:33.811676",
+    "elasticsearch_url": "https://localhost:9200/logs-*/_search",
+    "elasticsearch_host": "https://localhost:9200",
+    "elasticsearch_username": "admin@castlecf.test.com",
+    "status_code": 200,
+    "execution_duration_ms": 202.91500000000002,
+    "elasticsearch_took_ms": 3,
+    "index_used": "logs-*",
+    "time_range_applied": {
+      "field": "@timestamp",
+      "gte": "2024-08-01T00:00:00",
+      "lte": "2024-09-30T23:59:59"
+    }
+  },
+  "query": {
+    "size": 0,
+    "aggs": {
+      "source_clients": {
+        "terms": {
+          "field": "source.ip",
+          "size": 50,
+          "min_doc_count": 100
+        },
+        "aggs": {
+          "external_destinations": {
+            "cardinality": {
+              "field": "destination.ip"
+            }
+          },
+          "top_destinations": {
+            "terms": {
+              "field": "destination.ip",
+              "size": 5
+            }
+          }
+        }
+      }
+    },
+    "query": {
+      "bool": {
+        "must": [
+          {
+            "range": {
+              "source.ip": {
+                "gte": "10.0.0.0",
+                "lte": "172.31.255.255"
+              }
+            }
+          },
+          {
+            "terms": {
+              "destination.port": [
+                80,
+                443
+              ]
+            }
+          },
+          {
+            "range": {
+              "@timestamp": {
+                "gte": "2024-08-01T00:00:00",
+                "lte": "2024-09-30T23:59:59"
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "response": {
+    "took": 3,
+    "timed_out": false,
+    "_shards": {
+      "total": 66,
+      "successful": 66,
+      "skipped": 0,
+      "failed": 0
+    },
+    "hits": {
+      "total": {
+        "value": 1931,
+        "relation": "eq"
+      },
+      "max_score": null,
+      "hits": []
+    },
+    "aggregations": {
+      "source_clients": {
+        "doc_count_error_upper_bound": 0,
+        "sum_other_doc_count": 0,
+        "buckets": [
+          {
+            "key": "10.8.15.133",
+            "doc_count": 1570,
+            "external_destinations": {
+              "value": 66
+            },
+            "top_destinations": {
+              "doc_count_error_upper_bound": 0,
+              "sum_other_doc_count": 241,
+              "buckets": [
+                {
+                  "key": "72.5.43.29",
+                  "doc_count": 1235
+                },
+                {
+                  "key": "204.79.197.203",
+                  "doc_count": 27
+                },
+                {
+                  "key": "23.220.103.18",
+                  "doc_count": 24
+                },
+                {
+                  "key": "23.33.138.184",
+                  "doc_count": 22
+                },
+                {
+                  "key": "23.220.103.8",
+                  "doc_count": 21
+                }
+              ]
+            }
+          },
+          {
+            "key": "172.17.0.99",
+            "doc_count": 361,
+            "external_destinations": {
+              "value": 35
+            },
+            "top_destinations": {
+              "doc_count_error_upper_bound": 0,
+              "sum_other_doc_count": 92,
+              "buckets": [
+                {
+                  "key": "79.124.78.197",
+                  "doc_count": 218
+                },
+                {
+                  "key": "23.45.119.144",
+                  "doc_count": 18
+                },
+                {
+                  "key": "204.79.197.203",
+                  "doc_count": 14
+                },
+                {
+                  "key": "52.113.194.132",
+                  "doc_count": 10
+                },
+                {
+                  "key": "23.195.212.189",
+                  "doc_count": 9
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "success": true
+}

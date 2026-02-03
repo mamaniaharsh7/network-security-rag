@@ -1,0 +1,2864 @@
+{
+  "metadata": {
+    "query_file": "suricata_alerts.json",
+    "query_file_path": "queries_minimal/suricata_alerts.json",
+    "execution_time": "2025-08-09T20:44:34.438643",
+    "completion_time": "2025-08-09T20:44:34.679010",
+    "elasticsearch_url": "https://localhost:9200/logs-*/_search",
+    "elasticsearch_host": "https://localhost:9200",
+    "elasticsearch_username": "admin@castlecf.test.com",
+    "status_code": 200,
+    "execution_duration_ms": 240.367,
+    "elasticsearch_took_ms": 13,
+    "index_used": "logs-*",
+    "time_range_applied": {
+      "field": "@timestamp",
+      "gte": "2024-08-01T00:00:00",
+      "lte": "2024-09-30T23:59:59"
+    }
+  },
+  "query": {
+    "query": {
+      "bool": {
+        "must": [
+          {
+            "bool": {
+              "should": [
+                {
+                  "term": {
+                    "event.dataset": "suricata.alert"
+                  }
+                },
+                {
+                  "term": {
+                    "event.module": "suricata"
+                  }
+                },
+                {
+                  "term": {
+                    "tags": "alert"
+                  }
+                }
+              ],
+              "minimum_should_match": 1
+            }
+          },
+          {
+            "range": {
+              "source.ip": {
+                "gte": "10.0.0.0",
+                "lte": "172.31.255.255"
+              }
+            }
+          },
+          {
+            "range": {
+              "@timestamp": {
+                "gte": "2024-08-01T00:00:00",
+                "lte": "2024-09-30T23:59:59"
+              }
+            }
+          }
+        ],
+        "should": [
+          {
+            "range": {
+              "event.severity": {
+                "gte": 1,
+                "lte": 3
+              }
+            }
+          },
+          {
+            "range": {
+              "rule.severity": {
+                "gte": 1,
+                "lte": 3
+              }
+            }
+          },
+          {
+            "terms": {
+              "rule.category": [
+                "Misc Attack",
+                "Potential Corporate Privacy Violation",
+                "Trojan",
+                "Malware",
+                "Policy Violation"
+              ]
+            }
+          },
+          {
+            "wildcard": {
+              "rule.name": "*malware*"
+            }
+          },
+          {
+            "wildcard": {
+              "rule.name": "*trojan*"
+            }
+          },
+          {
+            "wildcard": {
+              "rule.name": "*suspicious*"
+            }
+          },
+          {
+            "wildcard": {
+              "rule.name": "*attack*"
+            }
+          },
+          {
+            "wildcard": {
+              "rule.name": "*DROP*"
+            }
+          },
+          {
+            "wildcard": {
+              "rule.name": "*ET*"
+            }
+          },
+          {
+            "wildcard": {
+              "rule.name": "*SURICATA*"
+            }
+          },
+          {
+            "range": {
+              "destination.port": {
+                "gte": 1024,
+                "lte": 65535
+              }
+            }
+          }
+        ],
+        "minimum_should_match": 1
+      }
+    },
+    "aggs": {
+      "alert_signatures": {
+        "terms": {
+          "field": "rule.name",
+          "size": 30
+        }
+      },
+      "high_severity_alerts": {
+        "filter": {
+          "range": {
+            "rule.severity": {
+              "gte": 1,
+              "lte": 2
+            }
+          }
+        },
+        "aggs": {
+          "high_severity_signatures": {
+            "terms": {
+              "field": "rule.name",
+              "size": 10
+            }
+          },
+          "high_severity_sources": {
+            "terms": {
+              "field": "source.ip",
+              "size": 10
+            }
+          },
+          "high_severity__destinations": {
+            "terms": {
+              "field": "destination.ip",
+              "size": 5
+            }
+          }
+        }
+      },
+      "alert_timeline": {
+        "date_histogram": {
+          "field": "@timestamp",
+          "calendar_interval": "1h"
+        }
+      }
+    },
+    "sort": [
+      {
+        "rule.severity": {
+          "order": "asc"
+        }
+      },
+      {
+        "@timestamp": {
+          "order": "desc"
+        }
+      }
+    ],
+    "size": 0
+  },
+  "response": {
+    "took": 13,
+    "timed_out": false,
+    "_shards": {
+      "total": 66,
+      "successful": 64,
+      "skipped": 63,
+      "failed": 2,
+      "failures": [
+        {
+          "shard": 0,
+          "index": ".ds-logs-zeek-so-2025.08.06-000001",
+          "node": "zw_gY9s2SOCqWd75gAAPlg",
+          "reason": {
+            "type": "query_shard_exception",
+            "reason": "No mapping found for [rule.severity] in order to sort on",
+            "index_uuid": "fjQvULLjRDiQOd5Ch0twpw",
+            "index": ".ds-logs-zeek-so-2025.08.06-000001"
+          }
+        }
+      ]
+    },
+    "hits": {
+      "total": {
+        "value": 371,
+        "relation": "eq"
+      },
+      "max_score": null,
+      "hits": []
+    },
+    "aggregations": {
+      "alert_signatures": {
+        "doc_count_error_upper_bound": 0,
+        "sum_other_doc_count": 0,
+        "buckets": [
+          {
+            "key": "ET MALWARE BadSpace/WarmCookie CnC Activity (GET) M1",
+            "doc_count": 303
+          },
+          {
+            "key": "ET HUNTING GENERIC SUSPICIOUS POST to Dotted Quad with Fake Browser 1",
+            "doc_count": 51
+          },
+          {
+            "key": "GPL NETBIOS SMB IPC$ unicode share access",
+            "doc_count": 5
+          },
+          {
+            "key": "ET INFO Microsoft Connection Test",
+            "doc_count": 3
+          },
+          {
+            "key": "ET MALWARE W32/Badspace.Backdoor CnC Activity (POST)",
+            "doc_count": 3
+          },
+          {
+            "key": "ET ATTACK_RESPONSE Koi Loader/Stealer CnC Config Inbound",
+            "doc_count": 1
+          },
+          {
+            "key": "ET HUNTING SUSPICIOUS Dotted Quad Host MZ Response",
+            "doc_count": 1
+          },
+          {
+            "key": "ET INFO PE EXE or DLL Windows file download HTTP",
+            "doc_count": 1
+          },
+          {
+            "key": "ET INFO Packed Executable Download",
+            "doc_count": 1
+          },
+          {
+            "key": "ET MALWARE Possible Windows executable sent when remote host claims to send html content",
+            "doc_count": 1
+          },
+          {
+            "key": "ET MALWARE Win32/Koi Stealer CnC Checkin (GET)",
+            "doc_count": 1
+          }
+        ]
+      },
+      "high_severity_alerts": {
+        "doc_count": 362,
+        "high_severity__destinations": {
+          "doc_count_error_upper_bound": 0,
+          "sum_other_doc_count": 0,
+          "buckets": [
+            {
+              "key": "72.5.43.29",
+              "doc_count": 309
+            },
+            {
+              "key": "79.124.78.197",
+              "doc_count": 49
+            },
+            {
+              "key": "10.8.15.133",
+              "doc_count": 3
+            },
+            {
+              "key": "172.17.0.99",
+              "doc_count": 1
+            }
+          ]
+        },
+        "high_severity_signatures": {
+          "doc_count_error_upper_bound": 0,
+          "sum_other_doc_count": 0,
+          "buckets": [
+            {
+              "key": "ET MALWARE BadSpace/WarmCookie CnC Activity (GET) M1",
+              "doc_count": 303
+            },
+            {
+              "key": "ET HUNTING GENERIC SUSPICIOUS POST to Dotted Quad with Fake Browser 1",
+              "doc_count": 51
+            },
+            {
+              "key": "ET MALWARE W32/Badspace.Backdoor CnC Activity (POST)",
+              "doc_count": 3
+            },
+            {
+              "key": "ET ATTACK_RESPONSE Koi Loader/Stealer CnC Config Inbound",
+              "doc_count": 1
+            },
+            {
+              "key": "ET HUNTING SUSPICIOUS Dotted Quad Host MZ Response",
+              "doc_count": 1
+            },
+            {
+              "key": "ET INFO PE EXE or DLL Windows file download HTTP",
+              "doc_count": 1
+            },
+            {
+              "key": "ET MALWARE Possible Windows executable sent when remote host claims to send html content",
+              "doc_count": 1
+            },
+            {
+              "key": "ET MALWARE Win32/Koi Stealer CnC Checkin (GET)",
+              "doc_count": 1
+            }
+          ]
+        },
+        "high_severity_sources": {
+          "doc_count_error_upper_bound": 0,
+          "sum_other_doc_count": 0,
+          "buckets": [
+            {
+              "key": "10.8.15.133",
+              "doc_count": 309
+            },
+            {
+              "key": "172.17.0.99",
+              "doc_count": 49
+            },
+            {
+              "key": "72.5.43.29",
+              "doc_count": 3
+            },
+            {
+              "key": "79.124.78.197",
+              "doc_count": 1
+            }
+          ]
+        }
+      },
+      "alert_timeline": {
+        "buckets": [
+          {
+            "key_as_string": "2024-08-15T00:00:00.000Z",
+            "key": 1723680000000,
+            "doc_count": 314
+          },
+          {
+            "key_as_string": "2024-08-15T01:00:00.000Z",
+            "key": 1723683600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-15T02:00:00.000Z",
+            "key": 1723687200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-15T03:00:00.000Z",
+            "key": 1723690800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-15T04:00:00.000Z",
+            "key": 1723694400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-15T05:00:00.000Z",
+            "key": 1723698000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-15T06:00:00.000Z",
+            "key": 1723701600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-15T07:00:00.000Z",
+            "key": 1723705200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-15T08:00:00.000Z",
+            "key": 1723708800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-15T09:00:00.000Z",
+            "key": 1723712400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-15T10:00:00.000Z",
+            "key": 1723716000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-15T11:00:00.000Z",
+            "key": 1723719600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-15T12:00:00.000Z",
+            "key": 1723723200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-15T13:00:00.000Z",
+            "key": 1723726800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-15T14:00:00.000Z",
+            "key": 1723730400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-15T15:00:00.000Z",
+            "key": 1723734000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-15T16:00:00.000Z",
+            "key": 1723737600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-15T17:00:00.000Z",
+            "key": 1723741200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-15T18:00:00.000Z",
+            "key": 1723744800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-15T19:00:00.000Z",
+            "key": 1723748400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-15T20:00:00.000Z",
+            "key": 1723752000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-15T21:00:00.000Z",
+            "key": 1723755600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-15T22:00:00.000Z",
+            "key": 1723759200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-15T23:00:00.000Z",
+            "key": 1723762800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-16T00:00:00.000Z",
+            "key": 1723766400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-16T01:00:00.000Z",
+            "key": 1723770000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-16T02:00:00.000Z",
+            "key": 1723773600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-16T03:00:00.000Z",
+            "key": 1723777200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-16T04:00:00.000Z",
+            "key": 1723780800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-16T05:00:00.000Z",
+            "key": 1723784400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-16T06:00:00.000Z",
+            "key": 1723788000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-16T07:00:00.000Z",
+            "key": 1723791600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-16T08:00:00.000Z",
+            "key": 1723795200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-16T09:00:00.000Z",
+            "key": 1723798800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-16T10:00:00.000Z",
+            "key": 1723802400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-16T11:00:00.000Z",
+            "key": 1723806000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-16T12:00:00.000Z",
+            "key": 1723809600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-16T13:00:00.000Z",
+            "key": 1723813200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-16T14:00:00.000Z",
+            "key": 1723816800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-16T15:00:00.000Z",
+            "key": 1723820400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-16T16:00:00.000Z",
+            "key": 1723824000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-16T17:00:00.000Z",
+            "key": 1723827600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-16T18:00:00.000Z",
+            "key": 1723831200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-16T19:00:00.000Z",
+            "key": 1723834800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-16T20:00:00.000Z",
+            "key": 1723838400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-16T21:00:00.000Z",
+            "key": 1723842000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-16T22:00:00.000Z",
+            "key": 1723845600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-16T23:00:00.000Z",
+            "key": 1723849200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-17T00:00:00.000Z",
+            "key": 1723852800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-17T01:00:00.000Z",
+            "key": 1723856400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-17T02:00:00.000Z",
+            "key": 1723860000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-17T03:00:00.000Z",
+            "key": 1723863600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-17T04:00:00.000Z",
+            "key": 1723867200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-17T05:00:00.000Z",
+            "key": 1723870800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-17T06:00:00.000Z",
+            "key": 1723874400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-17T07:00:00.000Z",
+            "key": 1723878000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-17T08:00:00.000Z",
+            "key": 1723881600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-17T09:00:00.000Z",
+            "key": 1723885200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-17T10:00:00.000Z",
+            "key": 1723888800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-17T11:00:00.000Z",
+            "key": 1723892400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-17T12:00:00.000Z",
+            "key": 1723896000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-17T13:00:00.000Z",
+            "key": 1723899600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-17T14:00:00.000Z",
+            "key": 1723903200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-17T15:00:00.000Z",
+            "key": 1723906800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-17T16:00:00.000Z",
+            "key": 1723910400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-17T17:00:00.000Z",
+            "key": 1723914000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-17T18:00:00.000Z",
+            "key": 1723917600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-17T19:00:00.000Z",
+            "key": 1723921200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-17T20:00:00.000Z",
+            "key": 1723924800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-17T21:00:00.000Z",
+            "key": 1723928400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-17T22:00:00.000Z",
+            "key": 1723932000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-17T23:00:00.000Z",
+            "key": 1723935600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-18T00:00:00.000Z",
+            "key": 1723939200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-18T01:00:00.000Z",
+            "key": 1723942800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-18T02:00:00.000Z",
+            "key": 1723946400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-18T03:00:00.000Z",
+            "key": 1723950000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-18T04:00:00.000Z",
+            "key": 1723953600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-18T05:00:00.000Z",
+            "key": 1723957200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-18T06:00:00.000Z",
+            "key": 1723960800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-18T07:00:00.000Z",
+            "key": 1723964400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-18T08:00:00.000Z",
+            "key": 1723968000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-18T09:00:00.000Z",
+            "key": 1723971600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-18T10:00:00.000Z",
+            "key": 1723975200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-18T11:00:00.000Z",
+            "key": 1723978800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-18T12:00:00.000Z",
+            "key": 1723982400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-18T13:00:00.000Z",
+            "key": 1723986000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-18T14:00:00.000Z",
+            "key": 1723989600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-18T15:00:00.000Z",
+            "key": 1723993200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-18T16:00:00.000Z",
+            "key": 1723996800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-18T17:00:00.000Z",
+            "key": 1724000400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-18T18:00:00.000Z",
+            "key": 1724004000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-18T19:00:00.000Z",
+            "key": 1724007600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-18T20:00:00.000Z",
+            "key": 1724011200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-18T21:00:00.000Z",
+            "key": 1724014800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-18T22:00:00.000Z",
+            "key": 1724018400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-18T23:00:00.000Z",
+            "key": 1724022000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-19T00:00:00.000Z",
+            "key": 1724025600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-19T01:00:00.000Z",
+            "key": 1724029200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-19T02:00:00.000Z",
+            "key": 1724032800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-19T03:00:00.000Z",
+            "key": 1724036400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-19T04:00:00.000Z",
+            "key": 1724040000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-19T05:00:00.000Z",
+            "key": 1724043600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-19T06:00:00.000Z",
+            "key": 1724047200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-19T07:00:00.000Z",
+            "key": 1724050800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-19T08:00:00.000Z",
+            "key": 1724054400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-19T09:00:00.000Z",
+            "key": 1724058000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-19T10:00:00.000Z",
+            "key": 1724061600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-19T11:00:00.000Z",
+            "key": 1724065200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-19T12:00:00.000Z",
+            "key": 1724068800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-19T13:00:00.000Z",
+            "key": 1724072400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-19T14:00:00.000Z",
+            "key": 1724076000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-19T15:00:00.000Z",
+            "key": 1724079600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-19T16:00:00.000Z",
+            "key": 1724083200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-19T17:00:00.000Z",
+            "key": 1724086800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-19T18:00:00.000Z",
+            "key": 1724090400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-19T19:00:00.000Z",
+            "key": 1724094000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-19T20:00:00.000Z",
+            "key": 1724097600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-19T21:00:00.000Z",
+            "key": 1724101200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-19T22:00:00.000Z",
+            "key": 1724104800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-19T23:00:00.000Z",
+            "key": 1724108400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-20T00:00:00.000Z",
+            "key": 1724112000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-20T01:00:00.000Z",
+            "key": 1724115600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-20T02:00:00.000Z",
+            "key": 1724119200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-20T03:00:00.000Z",
+            "key": 1724122800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-20T04:00:00.000Z",
+            "key": 1724126400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-20T05:00:00.000Z",
+            "key": 1724130000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-20T06:00:00.000Z",
+            "key": 1724133600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-20T07:00:00.000Z",
+            "key": 1724137200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-20T08:00:00.000Z",
+            "key": 1724140800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-20T09:00:00.000Z",
+            "key": 1724144400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-20T10:00:00.000Z",
+            "key": 1724148000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-20T11:00:00.000Z",
+            "key": 1724151600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-20T12:00:00.000Z",
+            "key": 1724155200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-20T13:00:00.000Z",
+            "key": 1724158800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-20T14:00:00.000Z",
+            "key": 1724162400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-20T15:00:00.000Z",
+            "key": 1724166000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-20T16:00:00.000Z",
+            "key": 1724169600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-20T17:00:00.000Z",
+            "key": 1724173200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-20T18:00:00.000Z",
+            "key": 1724176800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-20T19:00:00.000Z",
+            "key": 1724180400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-20T20:00:00.000Z",
+            "key": 1724184000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-20T21:00:00.000Z",
+            "key": 1724187600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-20T22:00:00.000Z",
+            "key": 1724191200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-20T23:00:00.000Z",
+            "key": 1724194800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-21T00:00:00.000Z",
+            "key": 1724198400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-21T01:00:00.000Z",
+            "key": 1724202000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-21T02:00:00.000Z",
+            "key": 1724205600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-21T03:00:00.000Z",
+            "key": 1724209200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-21T04:00:00.000Z",
+            "key": 1724212800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-21T05:00:00.000Z",
+            "key": 1724216400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-21T06:00:00.000Z",
+            "key": 1724220000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-21T07:00:00.000Z",
+            "key": 1724223600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-21T08:00:00.000Z",
+            "key": 1724227200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-21T09:00:00.000Z",
+            "key": 1724230800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-21T10:00:00.000Z",
+            "key": 1724234400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-21T11:00:00.000Z",
+            "key": 1724238000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-21T12:00:00.000Z",
+            "key": 1724241600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-21T13:00:00.000Z",
+            "key": 1724245200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-21T14:00:00.000Z",
+            "key": 1724248800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-21T15:00:00.000Z",
+            "key": 1724252400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-21T16:00:00.000Z",
+            "key": 1724256000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-21T17:00:00.000Z",
+            "key": 1724259600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-21T18:00:00.000Z",
+            "key": 1724263200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-21T19:00:00.000Z",
+            "key": 1724266800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-21T20:00:00.000Z",
+            "key": 1724270400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-21T21:00:00.000Z",
+            "key": 1724274000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-21T22:00:00.000Z",
+            "key": 1724277600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-21T23:00:00.000Z",
+            "key": 1724281200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-22T00:00:00.000Z",
+            "key": 1724284800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-22T01:00:00.000Z",
+            "key": 1724288400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-22T02:00:00.000Z",
+            "key": 1724292000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-22T03:00:00.000Z",
+            "key": 1724295600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-22T04:00:00.000Z",
+            "key": 1724299200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-22T05:00:00.000Z",
+            "key": 1724302800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-22T06:00:00.000Z",
+            "key": 1724306400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-22T07:00:00.000Z",
+            "key": 1724310000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-22T08:00:00.000Z",
+            "key": 1724313600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-22T09:00:00.000Z",
+            "key": 1724317200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-22T10:00:00.000Z",
+            "key": 1724320800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-22T11:00:00.000Z",
+            "key": 1724324400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-22T12:00:00.000Z",
+            "key": 1724328000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-22T13:00:00.000Z",
+            "key": 1724331600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-22T14:00:00.000Z",
+            "key": 1724335200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-22T15:00:00.000Z",
+            "key": 1724338800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-22T16:00:00.000Z",
+            "key": 1724342400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-22T17:00:00.000Z",
+            "key": 1724346000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-22T18:00:00.000Z",
+            "key": 1724349600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-22T19:00:00.000Z",
+            "key": 1724353200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-22T20:00:00.000Z",
+            "key": 1724356800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-22T21:00:00.000Z",
+            "key": 1724360400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-22T22:00:00.000Z",
+            "key": 1724364000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-22T23:00:00.000Z",
+            "key": 1724367600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-23T00:00:00.000Z",
+            "key": 1724371200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-23T01:00:00.000Z",
+            "key": 1724374800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-23T02:00:00.000Z",
+            "key": 1724378400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-23T03:00:00.000Z",
+            "key": 1724382000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-23T04:00:00.000Z",
+            "key": 1724385600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-23T05:00:00.000Z",
+            "key": 1724389200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-23T06:00:00.000Z",
+            "key": 1724392800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-23T07:00:00.000Z",
+            "key": 1724396400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-23T08:00:00.000Z",
+            "key": 1724400000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-23T09:00:00.000Z",
+            "key": 1724403600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-23T10:00:00.000Z",
+            "key": 1724407200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-23T11:00:00.000Z",
+            "key": 1724410800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-23T12:00:00.000Z",
+            "key": 1724414400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-23T13:00:00.000Z",
+            "key": 1724418000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-23T14:00:00.000Z",
+            "key": 1724421600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-23T15:00:00.000Z",
+            "key": 1724425200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-23T16:00:00.000Z",
+            "key": 1724428800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-23T17:00:00.000Z",
+            "key": 1724432400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-23T18:00:00.000Z",
+            "key": 1724436000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-23T19:00:00.000Z",
+            "key": 1724439600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-23T20:00:00.000Z",
+            "key": 1724443200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-23T21:00:00.000Z",
+            "key": 1724446800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-23T22:00:00.000Z",
+            "key": 1724450400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-23T23:00:00.000Z",
+            "key": 1724454000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-24T00:00:00.000Z",
+            "key": 1724457600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-24T01:00:00.000Z",
+            "key": 1724461200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-24T02:00:00.000Z",
+            "key": 1724464800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-24T03:00:00.000Z",
+            "key": 1724468400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-24T04:00:00.000Z",
+            "key": 1724472000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-24T05:00:00.000Z",
+            "key": 1724475600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-24T06:00:00.000Z",
+            "key": 1724479200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-24T07:00:00.000Z",
+            "key": 1724482800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-24T08:00:00.000Z",
+            "key": 1724486400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-24T09:00:00.000Z",
+            "key": 1724490000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-24T10:00:00.000Z",
+            "key": 1724493600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-24T11:00:00.000Z",
+            "key": 1724497200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-24T12:00:00.000Z",
+            "key": 1724500800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-24T13:00:00.000Z",
+            "key": 1724504400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-24T14:00:00.000Z",
+            "key": 1724508000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-24T15:00:00.000Z",
+            "key": 1724511600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-24T16:00:00.000Z",
+            "key": 1724515200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-24T17:00:00.000Z",
+            "key": 1724518800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-24T18:00:00.000Z",
+            "key": 1724522400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-24T19:00:00.000Z",
+            "key": 1724526000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-24T20:00:00.000Z",
+            "key": 1724529600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-24T21:00:00.000Z",
+            "key": 1724533200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-24T22:00:00.000Z",
+            "key": 1724536800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-24T23:00:00.000Z",
+            "key": 1724540400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-25T00:00:00.000Z",
+            "key": 1724544000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-25T01:00:00.000Z",
+            "key": 1724547600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-25T02:00:00.000Z",
+            "key": 1724551200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-25T03:00:00.000Z",
+            "key": 1724554800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-25T04:00:00.000Z",
+            "key": 1724558400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-25T05:00:00.000Z",
+            "key": 1724562000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-25T06:00:00.000Z",
+            "key": 1724565600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-25T07:00:00.000Z",
+            "key": 1724569200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-25T08:00:00.000Z",
+            "key": 1724572800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-25T09:00:00.000Z",
+            "key": 1724576400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-25T10:00:00.000Z",
+            "key": 1724580000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-25T11:00:00.000Z",
+            "key": 1724583600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-25T12:00:00.000Z",
+            "key": 1724587200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-25T13:00:00.000Z",
+            "key": 1724590800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-25T14:00:00.000Z",
+            "key": 1724594400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-25T15:00:00.000Z",
+            "key": 1724598000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-25T16:00:00.000Z",
+            "key": 1724601600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-25T17:00:00.000Z",
+            "key": 1724605200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-25T18:00:00.000Z",
+            "key": 1724608800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-25T19:00:00.000Z",
+            "key": 1724612400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-25T20:00:00.000Z",
+            "key": 1724616000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-25T21:00:00.000Z",
+            "key": 1724619600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-25T22:00:00.000Z",
+            "key": 1724623200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-25T23:00:00.000Z",
+            "key": 1724626800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-26T00:00:00.000Z",
+            "key": 1724630400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-26T01:00:00.000Z",
+            "key": 1724634000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-26T02:00:00.000Z",
+            "key": 1724637600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-26T03:00:00.000Z",
+            "key": 1724641200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-26T04:00:00.000Z",
+            "key": 1724644800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-26T05:00:00.000Z",
+            "key": 1724648400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-26T06:00:00.000Z",
+            "key": 1724652000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-26T07:00:00.000Z",
+            "key": 1724655600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-26T08:00:00.000Z",
+            "key": 1724659200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-26T09:00:00.000Z",
+            "key": 1724662800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-26T10:00:00.000Z",
+            "key": 1724666400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-26T11:00:00.000Z",
+            "key": 1724670000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-26T12:00:00.000Z",
+            "key": 1724673600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-26T13:00:00.000Z",
+            "key": 1724677200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-26T14:00:00.000Z",
+            "key": 1724680800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-26T15:00:00.000Z",
+            "key": 1724684400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-26T16:00:00.000Z",
+            "key": 1724688000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-26T17:00:00.000Z",
+            "key": 1724691600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-26T18:00:00.000Z",
+            "key": 1724695200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-26T19:00:00.000Z",
+            "key": 1724698800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-26T20:00:00.000Z",
+            "key": 1724702400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-26T21:00:00.000Z",
+            "key": 1724706000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-26T22:00:00.000Z",
+            "key": 1724709600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-26T23:00:00.000Z",
+            "key": 1724713200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-27T00:00:00.000Z",
+            "key": 1724716800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-27T01:00:00.000Z",
+            "key": 1724720400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-27T02:00:00.000Z",
+            "key": 1724724000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-27T03:00:00.000Z",
+            "key": 1724727600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-27T04:00:00.000Z",
+            "key": 1724731200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-27T05:00:00.000Z",
+            "key": 1724734800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-27T06:00:00.000Z",
+            "key": 1724738400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-27T07:00:00.000Z",
+            "key": 1724742000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-27T08:00:00.000Z",
+            "key": 1724745600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-27T09:00:00.000Z",
+            "key": 1724749200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-27T10:00:00.000Z",
+            "key": 1724752800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-27T11:00:00.000Z",
+            "key": 1724756400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-27T12:00:00.000Z",
+            "key": 1724760000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-27T13:00:00.000Z",
+            "key": 1724763600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-27T14:00:00.000Z",
+            "key": 1724767200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-27T15:00:00.000Z",
+            "key": 1724770800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-27T16:00:00.000Z",
+            "key": 1724774400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-27T17:00:00.000Z",
+            "key": 1724778000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-27T18:00:00.000Z",
+            "key": 1724781600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-27T19:00:00.000Z",
+            "key": 1724785200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-27T20:00:00.000Z",
+            "key": 1724788800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-27T21:00:00.000Z",
+            "key": 1724792400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-27T22:00:00.000Z",
+            "key": 1724796000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-27T23:00:00.000Z",
+            "key": 1724799600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-28T00:00:00.000Z",
+            "key": 1724803200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-28T01:00:00.000Z",
+            "key": 1724806800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-28T02:00:00.000Z",
+            "key": 1724810400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-28T03:00:00.000Z",
+            "key": 1724814000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-28T04:00:00.000Z",
+            "key": 1724817600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-28T05:00:00.000Z",
+            "key": 1724821200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-28T06:00:00.000Z",
+            "key": 1724824800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-28T07:00:00.000Z",
+            "key": 1724828400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-28T08:00:00.000Z",
+            "key": 1724832000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-28T09:00:00.000Z",
+            "key": 1724835600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-28T10:00:00.000Z",
+            "key": 1724839200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-28T11:00:00.000Z",
+            "key": 1724842800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-28T12:00:00.000Z",
+            "key": 1724846400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-28T13:00:00.000Z",
+            "key": 1724850000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-28T14:00:00.000Z",
+            "key": 1724853600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-28T15:00:00.000Z",
+            "key": 1724857200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-28T16:00:00.000Z",
+            "key": 1724860800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-28T17:00:00.000Z",
+            "key": 1724864400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-28T18:00:00.000Z",
+            "key": 1724868000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-28T19:00:00.000Z",
+            "key": 1724871600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-28T20:00:00.000Z",
+            "key": 1724875200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-28T21:00:00.000Z",
+            "key": 1724878800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-28T22:00:00.000Z",
+            "key": 1724882400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-28T23:00:00.000Z",
+            "key": 1724886000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-29T00:00:00.000Z",
+            "key": 1724889600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-29T01:00:00.000Z",
+            "key": 1724893200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-29T02:00:00.000Z",
+            "key": 1724896800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-29T03:00:00.000Z",
+            "key": 1724900400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-29T04:00:00.000Z",
+            "key": 1724904000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-29T05:00:00.000Z",
+            "key": 1724907600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-29T06:00:00.000Z",
+            "key": 1724911200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-29T07:00:00.000Z",
+            "key": 1724914800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-29T08:00:00.000Z",
+            "key": 1724918400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-29T09:00:00.000Z",
+            "key": 1724922000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-29T10:00:00.000Z",
+            "key": 1724925600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-29T11:00:00.000Z",
+            "key": 1724929200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-29T12:00:00.000Z",
+            "key": 1724932800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-29T13:00:00.000Z",
+            "key": 1724936400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-29T14:00:00.000Z",
+            "key": 1724940000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-29T15:00:00.000Z",
+            "key": 1724943600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-29T16:00:00.000Z",
+            "key": 1724947200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-29T17:00:00.000Z",
+            "key": 1724950800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-29T18:00:00.000Z",
+            "key": 1724954400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-29T19:00:00.000Z",
+            "key": 1724958000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-29T20:00:00.000Z",
+            "key": 1724961600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-29T21:00:00.000Z",
+            "key": 1724965200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-29T22:00:00.000Z",
+            "key": 1724968800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-29T23:00:00.000Z",
+            "key": 1724972400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-30T00:00:00.000Z",
+            "key": 1724976000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-30T01:00:00.000Z",
+            "key": 1724979600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-30T02:00:00.000Z",
+            "key": 1724983200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-30T03:00:00.000Z",
+            "key": 1724986800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-30T04:00:00.000Z",
+            "key": 1724990400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-30T05:00:00.000Z",
+            "key": 1724994000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-30T06:00:00.000Z",
+            "key": 1724997600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-30T07:00:00.000Z",
+            "key": 1725001200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-30T08:00:00.000Z",
+            "key": 1725004800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-30T09:00:00.000Z",
+            "key": 1725008400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-30T10:00:00.000Z",
+            "key": 1725012000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-30T11:00:00.000Z",
+            "key": 1725015600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-30T12:00:00.000Z",
+            "key": 1725019200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-30T13:00:00.000Z",
+            "key": 1725022800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-30T14:00:00.000Z",
+            "key": 1725026400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-30T15:00:00.000Z",
+            "key": 1725030000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-30T16:00:00.000Z",
+            "key": 1725033600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-30T17:00:00.000Z",
+            "key": 1725037200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-30T18:00:00.000Z",
+            "key": 1725040800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-30T19:00:00.000Z",
+            "key": 1725044400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-30T20:00:00.000Z",
+            "key": 1725048000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-30T21:00:00.000Z",
+            "key": 1725051600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-30T22:00:00.000Z",
+            "key": 1725055200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-30T23:00:00.000Z",
+            "key": 1725058800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-31T00:00:00.000Z",
+            "key": 1725062400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-31T01:00:00.000Z",
+            "key": 1725066000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-31T02:00:00.000Z",
+            "key": 1725069600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-31T03:00:00.000Z",
+            "key": 1725073200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-31T04:00:00.000Z",
+            "key": 1725076800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-31T05:00:00.000Z",
+            "key": 1725080400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-31T06:00:00.000Z",
+            "key": 1725084000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-31T07:00:00.000Z",
+            "key": 1725087600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-31T08:00:00.000Z",
+            "key": 1725091200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-31T09:00:00.000Z",
+            "key": 1725094800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-31T10:00:00.000Z",
+            "key": 1725098400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-31T11:00:00.000Z",
+            "key": 1725102000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-31T12:00:00.000Z",
+            "key": 1725105600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-31T13:00:00.000Z",
+            "key": 1725109200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-31T14:00:00.000Z",
+            "key": 1725112800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-31T15:00:00.000Z",
+            "key": 1725116400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-31T16:00:00.000Z",
+            "key": 1725120000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-31T17:00:00.000Z",
+            "key": 1725123600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-31T18:00:00.000Z",
+            "key": 1725127200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-31T19:00:00.000Z",
+            "key": 1725130800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-31T20:00:00.000Z",
+            "key": 1725134400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-31T21:00:00.000Z",
+            "key": 1725138000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-31T22:00:00.000Z",
+            "key": 1725141600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-08-31T23:00:00.000Z",
+            "key": 1725145200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-01T00:00:00.000Z",
+            "key": 1725148800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-01T01:00:00.000Z",
+            "key": 1725152400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-01T02:00:00.000Z",
+            "key": 1725156000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-01T03:00:00.000Z",
+            "key": 1725159600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-01T04:00:00.000Z",
+            "key": 1725163200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-01T05:00:00.000Z",
+            "key": 1725166800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-01T06:00:00.000Z",
+            "key": 1725170400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-01T07:00:00.000Z",
+            "key": 1725174000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-01T08:00:00.000Z",
+            "key": 1725177600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-01T09:00:00.000Z",
+            "key": 1725181200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-01T10:00:00.000Z",
+            "key": 1725184800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-01T11:00:00.000Z",
+            "key": 1725188400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-01T12:00:00.000Z",
+            "key": 1725192000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-01T13:00:00.000Z",
+            "key": 1725195600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-01T14:00:00.000Z",
+            "key": 1725199200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-01T15:00:00.000Z",
+            "key": 1725202800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-01T16:00:00.000Z",
+            "key": 1725206400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-01T17:00:00.000Z",
+            "key": 1725210000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-01T18:00:00.000Z",
+            "key": 1725213600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-01T19:00:00.000Z",
+            "key": 1725217200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-01T20:00:00.000Z",
+            "key": 1725220800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-01T21:00:00.000Z",
+            "key": 1725224400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-01T22:00:00.000Z",
+            "key": 1725228000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-01T23:00:00.000Z",
+            "key": 1725231600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-02T00:00:00.000Z",
+            "key": 1725235200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-02T01:00:00.000Z",
+            "key": 1725238800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-02T02:00:00.000Z",
+            "key": 1725242400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-02T03:00:00.000Z",
+            "key": 1725246000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-02T04:00:00.000Z",
+            "key": 1725249600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-02T05:00:00.000Z",
+            "key": 1725253200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-02T06:00:00.000Z",
+            "key": 1725256800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-02T07:00:00.000Z",
+            "key": 1725260400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-02T08:00:00.000Z",
+            "key": 1725264000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-02T09:00:00.000Z",
+            "key": 1725267600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-02T10:00:00.000Z",
+            "key": 1725271200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-02T11:00:00.000Z",
+            "key": 1725274800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-02T12:00:00.000Z",
+            "key": 1725278400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-02T13:00:00.000Z",
+            "key": 1725282000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-02T14:00:00.000Z",
+            "key": 1725285600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-02T15:00:00.000Z",
+            "key": 1725289200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-02T16:00:00.000Z",
+            "key": 1725292800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-02T17:00:00.000Z",
+            "key": 1725296400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-02T18:00:00.000Z",
+            "key": 1725300000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-02T19:00:00.000Z",
+            "key": 1725303600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-02T20:00:00.000Z",
+            "key": 1725307200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-02T21:00:00.000Z",
+            "key": 1725310800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-02T22:00:00.000Z",
+            "key": 1725314400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-02T23:00:00.000Z",
+            "key": 1725318000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-03T00:00:00.000Z",
+            "key": 1725321600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-03T01:00:00.000Z",
+            "key": 1725325200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-03T02:00:00.000Z",
+            "key": 1725328800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-03T03:00:00.000Z",
+            "key": 1725332400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-03T04:00:00.000Z",
+            "key": 1725336000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-03T05:00:00.000Z",
+            "key": 1725339600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-03T06:00:00.000Z",
+            "key": 1725343200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-03T07:00:00.000Z",
+            "key": 1725346800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-03T08:00:00.000Z",
+            "key": 1725350400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-03T09:00:00.000Z",
+            "key": 1725354000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-03T10:00:00.000Z",
+            "key": 1725357600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-03T11:00:00.000Z",
+            "key": 1725361200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-03T12:00:00.000Z",
+            "key": 1725364800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-03T13:00:00.000Z",
+            "key": 1725368400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-03T14:00:00.000Z",
+            "key": 1725372000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-03T15:00:00.000Z",
+            "key": 1725375600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-03T16:00:00.000Z",
+            "key": 1725379200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-03T17:00:00.000Z",
+            "key": 1725382800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-03T18:00:00.000Z",
+            "key": 1725386400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-03T19:00:00.000Z",
+            "key": 1725390000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-03T20:00:00.000Z",
+            "key": 1725393600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-03T21:00:00.000Z",
+            "key": 1725397200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-03T22:00:00.000Z",
+            "key": 1725400800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-03T23:00:00.000Z",
+            "key": 1725404400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-04T00:00:00.000Z",
+            "key": 1725408000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-04T01:00:00.000Z",
+            "key": 1725411600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-04T02:00:00.000Z",
+            "key": 1725415200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-04T03:00:00.000Z",
+            "key": 1725418800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-04T04:00:00.000Z",
+            "key": 1725422400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-04T05:00:00.000Z",
+            "key": 1725426000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-04T06:00:00.000Z",
+            "key": 1725429600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-04T07:00:00.000Z",
+            "key": 1725433200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-04T08:00:00.000Z",
+            "key": 1725436800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-04T09:00:00.000Z",
+            "key": 1725440400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-04T10:00:00.000Z",
+            "key": 1725444000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-04T11:00:00.000Z",
+            "key": 1725447600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-04T12:00:00.000Z",
+            "key": 1725451200000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-04T13:00:00.000Z",
+            "key": 1725454800000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-04T14:00:00.000Z",
+            "key": 1725458400000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-04T15:00:00.000Z",
+            "key": 1725462000000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-04T16:00:00.000Z",
+            "key": 1725465600000,
+            "doc_count": 0
+          },
+          {
+            "key_as_string": "2024-09-04T17:00:00.000Z",
+            "key": 1725469200000,
+            "doc_count": 31
+          },
+          {
+            "key_as_string": "2024-09-04T18:00:00.000Z",
+            "key": 1725472800000,
+            "doc_count": 26
+          }
+        ]
+      }
+    }
+  },
+  "success": true
+}

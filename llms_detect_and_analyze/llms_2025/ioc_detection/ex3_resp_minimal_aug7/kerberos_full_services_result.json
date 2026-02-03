@@ -1,0 +1,377 @@
+{
+  "metadata": {
+    "query_file": "kerberos_full_services.json",
+    "query_file_path": "queries_minimal/kerberos_full_services.json",
+    "execution_time": "2025-08-09T20:44:34.021199",
+    "completion_time": "2025-08-09T20:44:34.235089",
+    "elasticsearch_url": "https://localhost:9200/logs-*/_search",
+    "elasticsearch_host": "https://localhost:9200",
+    "elasticsearch_username": "admin@castlecf.test.com",
+    "status_code": 200,
+    "execution_duration_ms": 213.89,
+    "elasticsearch_took_ms": 2,
+    "index_used": "logs-*",
+    "time_range_applied": {
+      "field": "@timestamp",
+      "gte": "2024-08-01T00:00:00",
+      "lte": "2024-09-30T23:59:59"
+    }
+  },
+  "query": {
+    "query": {
+      "bool": {
+        "must": [
+          {
+            "term": {
+              "destination.port": 88
+            }
+          },
+          {
+            "range": {
+              "@timestamp": {
+                "gte": "2024-08-01T00:00:00",
+                "lte": "2024-09-30T23:59:59"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "aggs": {
+      "full_services": {
+        "terms": {
+          "script": {
+            "source": "if (doc['message.keyword'].size() > 0) { def msg = doc['message.keyword'].value; def service_pattern = /\"service\":\"([^\"]+)\"/; def matcher = service_pattern.matcher(msg); if (matcher.find()) { return matcher.group(1); } } return 'no_service_found';"
+          },
+          "size": 20
+        },
+        "aggs": {
+          "source_ips": {
+            "terms": {
+              "field": "source.ip",
+              "size": 10
+            }
+          }
+        }
+      }
+    },
+    "_source": [
+      "message",
+      "@timestamp",
+      "source.ip",
+      "kerberos.service"
+    ],
+    "size": 0
+  },
+  "response": {
+    "took": 2,
+    "timed_out": false,
+    "_shards": {
+      "total": 66,
+      "successful": 66,
+      "skipped": 0,
+      "failed": 0
+    },
+    "hits": {
+      "total": {
+        "value": 66,
+        "relation": "eq"
+      },
+      "max_score": null,
+      "hits": []
+    },
+    "aggregations": {
+      "full_services": {
+        "doc_count_error_upper_bound": 0,
+        "sum_other_doc_count": 1,
+        "buckets": [
+          {
+            "key": "krb_tcp",
+            "doc_count": 33,
+            "source_ips": {
+              "doc_count_error_upper_bound": 0,
+              "sum_other_doc_count": 0,
+              "buckets": [
+                {
+                  "key": "10.8.15.133",
+                  "doc_count": 25
+                },
+                {
+                  "key": "172.17.0.99",
+                  "doc_count": 8
+                }
+              ]
+            }
+          },
+          {
+            "key": "krbtgt/LAFONTAINEBLEU.ORG",
+            "doc_count": 10,
+            "source_ips": {
+              "doc_count_error_upper_bound": 0,
+              "sum_other_doc_count": 0,
+              "buckets": [
+                {
+                  "key": "10.8.15.133",
+                  "doc_count": 10
+                }
+              ]
+            }
+          },
+          {
+            "key": "LDAP/WIN-JEGJIX7Q9RS.lafontainebleu.org/lafontainebleu.org",
+            "doc_count": 2,
+            "source_ips": {
+              "doc_count_error_upper_bound": 0,
+              "sum_other_doc_count": 0,
+              "buckets": [
+                {
+                  "key": "10.8.15.133",
+                  "doc_count": 2
+                }
+              ]
+            }
+          },
+          {
+            "key": "cifs/WIN-JEGJIX7Q9RS.lafontainebleu.org",
+            "doc_count": 2,
+            "source_ips": {
+              "doc_count_error_upper_bound": 0,
+              "sum_other_doc_count": 0,
+              "buckets": [
+                {
+                  "key": "10.8.15.133",
+                  "doc_count": 2
+                }
+              ]
+            }
+          },
+          {
+            "key": "krbtgt/BEPOSITIVE.COM",
+            "doc_count": 2,
+            "source_ips": {
+              "doc_count_error_upper_bound": 0,
+              "sum_other_doc_count": 0,
+              "buckets": [
+                {
+                  "key": "172.17.0.99",
+                  "doc_count": 2
+                }
+              ]
+            }
+          },
+          {
+            "key": "krbtgt/lafontainebleu.org",
+            "doc_count": 2,
+            "source_ips": {
+              "doc_count_error_upper_bound": 0,
+              "sum_other_doc_count": 0,
+              "buckets": [
+                {
+                  "key": "10.8.15.133",
+                  "doc_count": 2
+                }
+              ]
+            }
+          },
+          {
+            "key": "DESKTOP-H8ALZBV$",
+            "doc_count": 1,
+            "source_ips": {
+              "doc_count_error_upper_bound": 0,
+              "sum_other_doc_count": 0,
+              "buckets": [
+                {
+                  "key": "10.8.15.133",
+                  "doc_count": 1
+                }
+              ]
+            }
+          },
+          {
+            "key": "LDAP/WIN-CTL9XBQ9Y19.bepositive.com/bepositive.com",
+            "doc_count": 1,
+            "source_ips": {
+              "doc_count_error_upper_bound": 0,
+              "sum_other_doc_count": 0,
+              "buckets": [
+                {
+                  "key": "172.17.0.99",
+                  "doc_count": 1
+                }
+              ]
+            }
+          },
+          {
+            "key": "LDAP/WIN-JEGJIX7Q9RS.lafontainebleu.org",
+            "doc_count": 1,
+            "source_ips": {
+              "doc_count_error_upper_bound": 0,
+              "sum_other_doc_count": 0,
+              "buckets": [
+                {
+                  "key": "10.8.15.133",
+                  "doc_count": 1
+                }
+              ]
+            }
+          },
+          {
+            "key": "cifs/WIN-CTL9XBQ9Y19",
+            "doc_count": 1,
+            "source_ips": {
+              "doc_count_error_upper_bound": 0,
+              "sum_other_doc_count": 0,
+              "buckets": [
+                {
+                  "key": "172.17.0.99",
+                  "doc_count": 1
+                }
+              ]
+            }
+          },
+          {
+            "key": "cifs/WIN-CTL9XBQ9Y19.bepositive.com",
+            "doc_count": 1,
+            "source_ips": {
+              "doc_count_error_upper_bound": 0,
+              "sum_other_doc_count": 0,
+              "buckets": [
+                {
+                  "key": "172.17.0.99",
+                  "doc_count": 1
+                }
+              ]
+            }
+          },
+          {
+            "key": "cifs/WIN-JEGJIX7Q9RS",
+            "doc_count": 1,
+            "source_ips": {
+              "doc_count_error_upper_bound": 0,
+              "sum_other_doc_count": 0,
+              "buckets": [
+                {
+                  "key": "10.8.15.133",
+                  "doc_count": 1
+                }
+              ]
+            }
+          },
+          {
+            "key": "cifs/WIN-JEGJIX7Q9RS.lafontainebleu.org/lafontainebleu.org",
+            "doc_count": 1,
+            "source_ips": {
+              "doc_count_error_upper_bound": 0,
+              "sum_other_doc_count": 0,
+              "buckets": [
+                {
+                  "key": "10.8.15.133",
+                  "doc_count": 1
+                }
+              ]
+            }
+          },
+          {
+            "key": "desktop-h8alzbv$",
+            "doc_count": 1,
+            "source_ips": {
+              "doc_count_error_upper_bound": 0,
+              "sum_other_doc_count": 0,
+              "buckets": [
+                {
+                  "key": "10.8.15.133",
+                  "doc_count": 1
+                }
+              ]
+            }
+          },
+          {
+            "key": "host/desktop-h8alzbv.lafontainebleu.org",
+            "doc_count": 1,
+            "source_ips": {
+              "doc_count_error_upper_bound": 0,
+              "sum_other_doc_count": 0,
+              "buckets": [
+                {
+                  "key": "10.8.15.133",
+                  "doc_count": 1
+                }
+              ]
+            }
+          },
+          {
+            "key": "host/desktop-rnvo9at.bepositive.com",
+            "doc_count": 1,
+            "source_ips": {
+              "doc_count_error_upper_bound": 0,
+              "sum_other_doc_count": 0,
+              "buckets": [
+                {
+                  "key": "172.17.0.99",
+                  "doc_count": 1
+                }
+              ]
+            }
+          },
+          {
+            "key": "krbtgt/BEPOSITIVE",
+            "doc_count": 1,
+            "source_ips": {
+              "doc_count_error_upper_bound": 0,
+              "sum_other_doc_count": 0,
+              "buckets": [
+                {
+                  "key": "172.17.0.99",
+                  "doc_count": 1
+                }
+              ]
+            }
+          },
+          {
+            "key": "krbtgt/LAFONTAINEBLEU",
+            "doc_count": 1,
+            "source_ips": {
+              "doc_count_error_upper_bound": 0,
+              "sum_other_doc_count": 0,
+              "buckets": [
+                {
+                  "key": "10.8.15.133",
+                  "doc_count": 1
+                }
+              ]
+            }
+          },
+          {
+            "key": "ldap/win-ctl9xbq9y19.bepositive.com",
+            "doc_count": 1,
+            "source_ips": {
+              "doc_count_error_upper_bound": 0,
+              "sum_other_doc_count": 0,
+              "buckets": [
+                {
+                  "key": "172.17.0.99",
+                  "doc_count": 1
+                }
+              ]
+            }
+          },
+          {
+            "key": "ldap/win-jegjix7q9rs.lafontainebleu.org",
+            "doc_count": 1,
+            "source_ips": {
+              "doc_count_error_upper_bound": 0,
+              "sum_other_doc_count": 0,
+              "buckets": [
+                {
+                  "key": "10.8.15.133",
+                  "doc_count": 1
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "success": true
+}
