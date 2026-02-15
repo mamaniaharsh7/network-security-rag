@@ -1,9 +1,0 @@
-# Security Incident Response Questions
-# One question per line
-# Lines starting with # are ignored
-
-What was the initial attack vector and entry point?
-Which accounts were compromised or created for persistence?
-What lateral movement techniques were used and which systems were accessed?
-What was the final impact on operational technology systems?
-What is the attack timeline from initial compromise to impact?
