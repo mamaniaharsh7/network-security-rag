@@ -2,14 +2,14 @@
   "metadata": {
     "query_file": "file_downloads.json",
     "query_file_path": "queries_minimal\\file_downloads.json",
-    "execution_time": "2026-02-13T20:08:57.327826",
-    "completion_time": "2026-02-13T20:08:57.495855",
+    "execution_time": "2026-02-13T21:35:19.015410",
+    "completion_time": "2026-02-13T21:35:19.219095",
     "elasticsearch_url": "https://localhost:9200/logs-*/_search",
     "elasticsearch_host": "https://localhost:9200",
     "elasticsearch_username": "onion@onion.com",
     "status_code": 200,
-    "execution_duration_ms": 168.02900000000002,
-    "elasticsearch_took_ms": 30,
+    "execution_duration_ms": 203.685,
+    "elasticsearch_took_ms": 32,
     "index_used": "logs-*",
     "time_range_applied": {
       "field": "@timestamp",
@@ -225,7 +225,7 @@
     "size": 0
   },
   "response": {
-    "took": 30,
+    "took": 32,
     "timed_out": false,
     "_shards": {
       "total": 92,

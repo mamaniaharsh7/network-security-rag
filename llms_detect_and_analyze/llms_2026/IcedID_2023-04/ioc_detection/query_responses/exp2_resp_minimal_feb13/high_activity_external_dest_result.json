@@ -2,13 +2,13 @@
   "metadata": {
     "query_file": "high_activity_external_dest.json",
     "query_file_path": "queries_minimal\\high_activity_external_dest.json",
-    "execution_time": "2026-02-13T20:08:57.518737",
-    "completion_time": "2026-02-13T20:08:57.692705",
+    "execution_time": "2026-02-13T21:35:19.226138",
+    "completion_time": "2026-02-13T21:35:19.410882",
     "elasticsearch_url": "https://localhost:9200/logs-*/_search",
     "elasticsearch_host": "https://localhost:9200",
     "elasticsearch_username": "onion@onion.com",
     "status_code": 200,
-    "execution_duration_ms": 173.96800000000002,
+    "execution_duration_ms": 184.744,
     "elasticsearch_took_ms": 4,
     "index_used": "logs-*",
     "time_range_applied": {

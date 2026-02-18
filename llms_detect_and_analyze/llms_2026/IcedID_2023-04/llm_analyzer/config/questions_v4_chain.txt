@@ -1,0 +1,33 @@
+# Security Incident Response Questions
+# One question per line
+# Lines starting with # are ignored
+
+# === BASIC INCIDENT QUESTIONS ===
+What is the IP address of the potentially infected internal host in the LAN??
+What is the hostname of the potentially infected machine in the LAN?
+What is the Windows user account name of the potentially infected machine in the LAN?
+What are the likely fake or suspicious domains / URLs for initial infection?
+What are the suspicious external IP addresses contacted, which might be involved in command-and-control (C2) communication?
+What did the Red attacker do in the given timeframe? List all the attack steps concisely.
+
+# What are the indicators of compromise (IOCs)?
+# What is the malware delivery method?
+
+# === ADVANCED ANALYSIS QUESTIONS ===
+# Uncomment the questions below for deeper analysis
+# What are the command and control (C2) server IP addresses? Look for unusual data volumes, beaconing behavior, suspicious certificates, etc. 
+# What is the IP address of the potentially infected internal host? Look for the source of suspicious downloads, source clients with unusual traffic patterns, etc.
+# What are the likely fake domains for initial infection? Look for misspelled domains, etc.
+# What malware family was deployed?
+# What is the time range of malicious activity?
+# What are the attack sequence phases?
+# What lateral movement techniques were used?
+# What data exfiltration occurred?
+# What persistence mechanisms were established?
+# What privilege escalation methods were used?
+# What network reconnaissance was performed?
+# What defense evasion techniques were employed?
+# What impact did the attack have on business operations?
+# What recommendations exist for preventing similar attacks?
+# What are the indicators of compromise (IOCs)?
+# What timeline can be established for the attack progression?

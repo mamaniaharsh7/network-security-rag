@@ -15,8 +15,8 @@ python analyzer/modular_cli.py \
     --api-key-file config/deepseek_key.txt \
     --cache cache/ex2_security_embeddings_feb13.pkl \
     --context-file config/ex1_network_context.txt \
-    --questions-file config/questions_v3.txt \
-    --output reports/7_chunks/ex2_qv3_deepseek_analysis_feb15.md \
+    --questions-file config/questions_v4_chain.txt \
+    --output reports/7_chunks/ex2_qv4_deepseek_analysis_feb17.md \
     --debug
 
 echo "✅ Analysis complete!"

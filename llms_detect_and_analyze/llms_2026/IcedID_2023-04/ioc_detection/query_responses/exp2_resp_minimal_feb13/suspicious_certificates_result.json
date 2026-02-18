@@ -2,14 +2,14 @@
   "metadata": {
     "query_file": "suspicious_certificates.json",
     "query_file_path": "queries_minimal\\suspicious_certificates.json",
-    "execution_time": "2026-02-13T20:08:58.425771",
-    "completion_time": "2026-02-13T20:08:58.584575",
+    "execution_time": "2026-02-13T21:35:20.104185",
+    "completion_time": "2026-02-13T21:35:20.297541",
     "elasticsearch_url": "https://localhost:9200/logs-*/_search",
     "elasticsearch_host": "https://localhost:9200",
     "elasticsearch_username": "onion@onion.com",
     "status_code": 200,
-    "execution_duration_ms": 158.804,
-    "elasticsearch_took_ms": 52,
+    "execution_duration_ms": 193.356,
+    "elasticsearch_took_ms": 34,
     "index_used": "logs-*",
     "time_range_applied": {
       "field": "@timestamp",
@@ -145,7 +145,7 @@
     "size": 0
   },
   "response": {
-    "took": 52,
+    "took": 34,
     "timed_out": false,
     "_shards": {
       "total": 92,

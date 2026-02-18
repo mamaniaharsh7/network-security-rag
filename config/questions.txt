@@ -1,0 +1,26 @@
+# Security Incident Response Questions
+# One question per line
+# Lines starting with # are ignored
+
+# === BASIC INCIDENT QUESTIONS ===
+What is the IP address of the infected host?
+What is the hostname of the infected machine?
+What is the Windows user account name?
+What is the likely fake domain for initial infection?
+What are the C2 server IP addresses and ports?
+What malware family was deployed?
+What is the time range of malicious activity?
+What are the attack sequence phases?
+
+# === ADVANCED ANALYSIS QUESTIONS ===
+# Uncomment the questions below for deeper analysis
+# What lateral movement techniques were used?
+# What data exfiltration occurred?
+# What persistence mechanisms were established?
+# What privilege escalation methods were used?
+# What network reconnaissance was performed?
+# What defense evasion techniques were employed?
+# What impact did the attack have on business operations?
+# What recommendations exist for preventing similar attacks?
+# What are the indicators of compromise (IOCs)?
+# What timeline can be established for the attack progression?

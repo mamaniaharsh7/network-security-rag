@@ -4,3 +4,4 @@ __pycache__/
 *.pyc
 cache/
 **/config/keys/*.txt
+*_key.txt

@@ -2,13 +2,13 @@
   "metadata": {
     "query_file": "suricata_alerts.json",
     "query_file_path": "queries_minimal\\suricata_alerts.json",
-    "execution_time": "2026-02-13T20:08:58.251007",
-    "completion_time": "2026-02-13T20:08:58.401045",
+    "execution_time": "2026-02-13T21:35:19.940898",
+    "completion_time": "2026-02-13T21:35:20.099625",
     "elasticsearch_url": "https://localhost:9200/logs-*/_search",
     "elasticsearch_host": "https://localhost:9200",
     "elasticsearch_username": "onion@onion.com",
     "status_code": 200,
-    "execution_duration_ms": 150.038,
+    "execution_duration_ms": 158.727,
     "elasticsearch_took_ms": 25,
     "index_used": "logs-*",
     "time_range_applied": {

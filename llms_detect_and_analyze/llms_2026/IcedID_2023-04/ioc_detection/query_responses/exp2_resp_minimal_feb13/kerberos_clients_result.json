@@ -2,14 +2,14 @@
   "metadata": {
     "query_file": "kerberos_clients.json",
     "query_file_path": "queries_minimal\\kerberos_clients.json",
-    "execution_time": "2026-02-13T20:08:57.720326",
-    "completion_time": "2026-02-13T20:08:57.884021",
+    "execution_time": "2026-02-13T21:35:19.416370",
+    "completion_time": "2026-02-13T21:35:19.604421",
     "elasticsearch_url": "https://localhost:9200/logs-*/_search",
     "elasticsearch_host": "https://localhost:9200",
     "elasticsearch_username": "onion@onion.com",
     "status_code": 200,
-    "execution_duration_ms": 163.695,
-    "elasticsearch_took_ms": 7,
+    "execution_duration_ms": 188.051,
+    "elasticsearch_took_ms": 4,
     "index_used": "logs-*",
     "time_range_applied": {
       "field": "@timestamp",
@@ -63,7 +63,7 @@
     "size": 0
   },
   "response": {
-    "took": 7,
+    "took": 4,
     "timed_out": false,
     "_shards": {
       "total": 92,
