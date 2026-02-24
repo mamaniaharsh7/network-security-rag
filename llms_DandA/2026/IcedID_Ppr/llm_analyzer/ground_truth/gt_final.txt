@@ -22,14 +22,14 @@ ANSWER:
 Q6: What are the suspicious external IP addresses contacted, which might be involved in C2 communication? 
     (ALL parts of the attack -- delivery infrastructure, post-delivery, etc.)
 ANSWER:
-  80.77.25.175          -- [HTTP GET to /main.php]          -- [Delivery Gate]
-  192.153.57.233        -- [skigimeetroc[.]com]             -- [Payload Delivery]
-  104.168.53.18         -- [askamoshopsi[.]com + spakernakurs[.]com] -- [Post-Infection C2]
-  217.199.121.56        -- [skansnekssky[.]com]             -- [Post-Infection C2]
+  80.77.25.175    | HTTP GET to /main.php        | Delivery Gate    
+  192.153.57.233  | skigimeetroc.com             | Payload Delivery
+  104.168.53.18   | askamoshopsi + spakernakurs  | Primary C2       
+  217.199.121.56  | skansnekssky.com             | Secondary C2     
 ================================================================================
 Q7: What are the suspicious external IP addresses contacted, which might be involved in C2 communication POST-INFECTION, 
     after the payload was delivered?
 ANSWER:
-  104.168.53.18         -- [askamoshopsi[.]com + spakernakurs[.]com] -- [Post-Infection C2]
-  217.199.121.56        -- [skansnekssky[.]com]             -- [Post-Infection C2]
+  104.168.53.18   | askamoshopsi + spakernakurs  | Primary C2       
+  217.199.121.56  | skansnekssky.com             | Secondary C2    
 ================================================================================
