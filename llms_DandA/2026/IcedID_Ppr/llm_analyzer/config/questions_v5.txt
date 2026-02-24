@@ -1,0 +1,12 @@
+# Security Incident Response Questions
+# One question per line
+# Lines starting with # are ignored
+
+# === BASIC INCIDENT QUESTIONS ===
+What is the IP address of the potentially infected internal host in the LAN? High-severity alerts are your most reliable signal.
+What is the hostname of the potentially infected machine in the LAN?
+What is the Windows user account name of the potentially infected machine in the LAN?
+What is likely the initial infection activity?
+How did the infection start?
+What are the likely the fake or suspicious domains / URLs for this attack?
+What are the suspicious external IP addresses contacted, which might be involved in command-and-control (C2) communication?
