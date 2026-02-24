@@ -1,0 +1,452 @@
+================================================================================
+Q1: What is the IP address of the potentially infected internal host in the LAN?
+================================================================================
+ANSWER: 10.4.19.136
+
+Note: A secondary host, 10.4.19.138, was subsequently infected via lateral
+movement from the primary host.
+
+EXPLANATION:
+
+10.4.19.136 is identified as patient zero because all initial malicious activity
+originates exclusively from it. No other internal host generates suspicious
+traffic at infection time.
+
+Chronological evidence:
+
+  15:31:08 UTC  HTTP GET to 80.77.25.175/main.php        src: 10.4.19.136
+  15:35:39 UTC  HTTP GET to skigimeetroc.com/             src: 10.4.19.136
+                Response: HTTP 200, Content-Type: application/gzip (543 KB)
+  15:36:41 UTC  TLS ClientHello to 104.168.53.18:443,    src: 10.4.19.136
+                SNI=askamoshopsi.com (first C2 beacon)
+  15:36:44 UTC  TLS ClientHello to 217.199.121.56:443,   src: 10.4.19.136
+                SNI=skansnekssky.com (second C2 beacon)
+  15:36:46 UTC  SAMR calls to DC at 10.4.19.19           src: 10.4.19.136
+                (automated AD user enumeration, 90 sec after C2 established)
+
+The SAMR opcodes at 15:36:46 UTC confirm automated post-infection recon:
+  opcode 64: SamrConnect5
+  opcode  6: SamrEnumDomains
+  opcode  5: SamrLookupDomainInSamServer
+  opcode  7: SamrOpenDomain
+  opcode 17: SamrQueryDisplayInformation (user enumeration)
+  opcode 19: SamrGetAliasMembership
+  opcode 20: SamrOpenAlias
+
+10.4.19.138 (DESKTOP-RETP4BU) first shows infection indicators at 17:02:30 UTC,
+approximately 90 minutes after 10.4.19.136, via AD recon and C2 to
+joansstudio.store subdomains. It is a lateral movement victim, not an
+independent infection source.
+
+MAC address of primary host: 14:58:d0:2e:c5:ae
+
+
+================================================================================
+Q2: What is the hostname of the potentially infected machine in the LAN?
+================================================================================
+
+ANSWER: DESKTOP-SFF9LJF
+
+Note: The secondary infected host (10.4.19.138) has hostname DESKTOP-RETP4BU.
+
+EXPLANATION:
+
+DESKTOP-SFF9LJF is confirmed by two independent protocol sources:
+
+1. SMB Browser Protocol announcement
+   Frame at 15:33:47 UTC, source 10.4.19.136, explicitly broadcasts the server
+   name "DESKTOP-SFF9LJF" via the SMB browser election mechanism.
+
+2. NetBIOS Name Service (NBNS)
+   Frame at 15:36:46 UTC, source 10.4.19.136, registers the NetBIOS name
+   DESKTOP-SFF9LJF<00> (name type 0x00 = Workstation/Redirector service).
+   The DC at 10.4.19.19 confirms the registration in its response.
+
+The host is a domain member of boogienights.live.
+FQDN: DESKTOP-SFF9LJF.boogienights.live
+
+Secondary host confirmation:
+   Frames from 17:06:20 UTC, source 10.4.19.138, register:
+   DESKTOP-RETP4BU<00> (Workstation) and DESKTOP-RETP4BU<20> (Server service)
+   FQDN: DESKTOP-RETP4BU.boogienights.live
+
+Domain Controller: WIN-GP4JHCK2JMV.boogienights.live (10.4.19.19)
+
+
+================================================================================
+Q3: What is the Windows user account name of the potentially infected machine?
+================================================================================
+
+ANSWER: csilva
+
+Note: The user account on the secondary infected host (10.4.19.138) is irichardson.
+
+EXPLANATION:
+
+csilva is identified via Kerberos authentication frames sourced from 10.4.19.136:
+
+   19:30:50 UTC  Kerberos AS-REQ, CNameString=csilva, realm=BOOGIENIGHTS
+                 src: 10.4.19.136
+   19:30:56 UTC  Multiple Kerberos TGS-REQ frames, CNameString=csilva,
+                 realm=BOOGIENIGHTS.LIVE, src: 10.4.19.136
+
+The authentication occurs ~4 hours into the infection, consistent with the
+legitimate user logging in on an already-infected machine. IcedID operates
+silently in the background and does not interrupt normal user sessions.
+
+irichardson is identified via Kerberos frames sourced from 10.4.19.138:
+
+   17:07:13 UTC  Kerberos CNameString=irichardson, src: 10.4.19.138
+   17:11:39 UTC  Kerberos CNameString=irichardson, src: 10.4.19.138
+
+Both confirmed by DC ticket-granting responses from 10.4.19.19.
+
+Note: The PCAP also contains machine account entries DESKTOP-RETP4BU$ and
+DESKTOP-JAL4D68$. These are computer accounts for machine-level domain
+operations and are distinct from the human user accounts above.
+
+
+================================================================================
+Q4: What is likely the initial infection vector?
+================================================================================
+
+ANSWER: Malicious web link / drive-by download via IcedID PHP delivery gate
+
+EXPLANATION:
+
+The infection entered through a two-step browser-based HTTP delivery chain:
+
+Step 1 -- Gate callback:
+   15:31:08 UTC  HTTP GET to http://80.77.25.175/main.php
+   User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+               (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36 Edg/112.0.1722.48
+   Response:   HTTP 302 redirect (Content-Type: text/html; charset=UTF-8)
+
+Step 2 -- Payload download:
+   15:35:39 UTC  HTTP GET to http://skigimeetroc.com/  (resolved: 192.153.57.233)
+   Response:     HTTP 200, Content-Type: application/gzip, ~543 KB
+                 (gzip-compressed IcedID loader)
+
+Execution confirmed:
+   15:36:41 UTC  First C2 beacon to 104.168.53.18:443 (askamoshopsi.com)
+                 60 seconds after payload download -- implant is live
+
+Why this points to a socially-engineered web vector:
+
+   a) The gate request uses a genuine Microsoft Edge 112 User-Agent, meaning
+      a real browser made the request. The user likely clicked a malicious
+      link in a phishing email or visited a compromised page.
+
+   b) /main.php on a bare IP address is a canonical IcedID delivery gate
+      pattern, well-documented in IcedID malspam campaigns.
+
+   c) The 4-minute gap between the gate callback (15:31:08) and the payload
+      download (15:35:39) is consistent with a human interacting with a
+      redirect chain or CAPTCHA, not an automated exploit.
+
+   d) No exploit-kit traffic, no PowerShell download cradles, no Office macro
+      indicators are present. Delivery is entirely browser-based HTTP.
+
+
+================================================================================
+Q5: What are the likely fake or suspicious domains / URLs for this attack?
+================================================================================
+
+ANSWER:
+  80.77.25.175/main.php
+  skigimeetroc.com
+  askamoshopsi.com
+  spakernakurs.com
+  skansnekssky.com
+  cotecsecuritygroup.com  (/wicd/643d0491bcea1.zip)
+  nobpc.joansstudio.store
+  dlmfz.joansstudio.store
+  acroipm2.adobe.com  (legitimate domain abused for fake traffic blending)
+
+EXPLANATION:
+
+--- CATEGORY A: PAYLOAD DELIVERY ---
+
+  80.77.25.175/main.php
+  - Bare IP, no domain (evades DNS-based detection)
+  - Generic /main.php endpoint is a canonical IcedID gate pattern
+  - HTTP GET at 15:31:08 UTC, responded with HTTP 302 redirect
+  - Source: 10.4.19.136
+
+  skigimeetroc.com  (resolved IP: 192.153.57.233)
+  - HTTP GET at 15:35:39 UTC, responded HTTP 200 application/gzip (543 KB)
+  - Delivered the IcedID loader to 10.4.19.136
+
+  cotecsecuritygroup.com  (resolved IP: 66.29.147.117)
+  - HTTP GET at 17:17:10 UTC from 10.4.19.138 (laterally infected host)
+  - URI: /wicd/643d0491bcea1.zip
+  - Responded HTTP 200 application/zip
+  - Random hex filename under /wicd/ path is a known IcedID second-stage
+    delivery URL pattern, commonly used to drop Cobalt Strike loaders
+
+--- CATEGORY B: POST-INFECTION IcedID C2 (primary host: 10.4.19.136) ---
+
+  askamoshopsi.com  (resolved IP: 104.168.53.18)
+  - TLS SNI confirmed at 15:36:41 UTC
+  - HTTPS port 443, persistent beaconing for ~5.75 hours
+  - 551 outbound frames from 10.4.19.136
+  - Primary IcedID C2
+
+  spakernakurs.com  (resolved IP: 104.168.53.18 -- same IP as above)
+  - IcedID domain rotation mechanism: two aliases on one server
+  - If one domain is DNS-blocked, the other still resolves to the same IP
+  - C2 rotation / fallback partner for askamoshopsi.com
+
+  skansnekssky.com  (resolved IP: 217.199.121.56)
+  - TLS SNI confirmed at 15:36:44 UTC
+  - HTTPS port 443, persistent beaconing for ~5.70 hours
+  - 568 outbound frames from 10.4.19.136 (highest frame count of any C2)
+  - Secondary IcedID C2, running concurrently with 104.168.53.18
+
+--- CATEGORY C: SECOND-STAGE C2 (secondary host: 10.4.19.138) ---
+
+  nobpc.joansstudio.store
+  - DNS queries from 10.4.19.138 starting 17:12:41 UTC
+  - Randomized 5-character prefix on .store TLD
+  - DNS queries routed through DC (10.4.19.19); no IP resolved in capture
+  - Second-stage C2 after lateral movement
+
+  dlmfz.joansstudio.store
+  - DNS queries from 10.4.19.138 starting 17:15:47 UTC
+  - Different 5-character random prefix on same base domain
+  - DGA-style subdomain rotation paired with nobpc.joansstudio.store
+
+--- CATEGORY D: FAKE TRAFFIC / BLENDING ---
+
+  acroipm2.adobe.com  (legitimate Adobe domain, abused for traffic blending)
+  URLs:
+    /assets/Owner/arm/ProcessMAU.txt
+    /assets/Owner/arm/16/adnme/NoValidReasonForAdnme.txt
+  User-Agent: Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.2; WOW64;
+              Trident/7.0; .NET4.0C; .NET4.0E; .NET CLR 2.0.50727;
+              .NET CLR 3.0.30729; .NET CLR 3.5.30729)
+  - Anachronistic MSIE 7.0 UA mimics a background Adobe Acrobat update check
+  - Observed from BOTH infected hosts:
+      10.4.19.138 at 17:23:41 UTC
+      10.4.19.136 at 19:42:57 UTC
+  - Purpose: generate plausible-looking HTTP noise to mask C2 traffic
+
+NAMING PATTERN NOTE:
+All IcedID-specific C2 and delivery domains use random consonant-heavy strings
+with no brand resemblance: askamoshopsi, spakernakurs, skansnekssky,
+skigimeetroc. The joansstudio.store subdomains use randomized 5-char prefixes
+(nobpc, dlmfz). These patterns are reliable behavioral indicators for detection.
+
+
+================================================================================
+Q6: What are the suspicious external IP addresses contacted, which might be
+    involved in C2 communication? (ALL parts of the attack -- delivery
+    infrastructure, post-delivery, etc.)
+================================================================================
+
+ANSWER:
+  80.77.25.175
+  192.153.57.233
+  104.168.53.18
+  217.199.121.56
+  66.29.147.117
+  193.149.176.100
+
+EXPLANATION:
+
+Listed in chronological order of first contact across the full attack chain:
+
+--- 80.77.25.175 ---
+Phase       : Delivery Gate
+Domain      : None (bare IP)
+Protocol    : HTTP port 80
+First seen  : 15:31:07 UTC
+Last seen   : 15:31:30 UTC
+Frames      : 6 total
+Victim      : 10.4.19.136
+
+Single HTTP GET to /main.php with a real Edge/112 User-Agent. Server responded
+HTTP 302. Connection terminated after the redirect. Never contacted again.
+This is the IcedID initial gate -- its purpose is to fingerprint the victim
+and redirect toward the payload host. Use of a bare IP avoids domain-based
+DNS detection.
+
+--- 192.153.57.233 ---
+Phase       : Payload Delivery
+Domain      : skigimeetroc.com
+Protocol    : HTTP port 80
+First seen  : 15:35:39 UTC
+Last seen   : 15:36:41 UTC (connection teardown)
+Frames      : 40 outbound from 10.4.19.136
+Victim      : 10.4.19.136
+
+Single HTTP transaction. GET to / on skigimeetroc.com, server responded HTTP 200
+with Content-Type: application/gzip (~543 KB). Transaction completed in ~2
+seconds. Never contacted again. This is a payload staging server, not a
+persistent C2 server.
+
+--- 104.168.53.18 ---
+Phase       : Post-Infection C2 (Primary, persistent)
+Domains     : askamoshopsi.com + spakernakurs.com (domain rotation on single IP)
+Protocol    : HTTPS (TLS) port 443
+First seen  : 15:36:41 UTC
+Last seen   : 21:22:21 UTC
+Duration    : ~5.75 hours
+Frames      : 551 outbound from 10.4.19.136
+Victim      : 10.4.19.136
+
+Primary long-term IcedID C2 server. Beaconing begins within 60 seconds of
+payload download and persists for the entire capture duration. Two domain
+aliases (askamoshopsi.com and spakernakurs.com) share this single IP as a
+resilience technique -- if one domain is blocked, the other still resolves
+to the same server. TLS sessions exchange data at regular intervals consistent
+with IcedID beacon check-ins.
+
+--- 217.199.121.56 ---
+Phase       : Post-Infection C2 (Secondary, persistent, concurrent)
+Domain      : skansnekssky.com
+Protocol    : HTTPS (TLS) port 443
+First seen  : 15:36:44 UTC (3 seconds after first contact with 104.168.53.18)
+Last seen   : 21:18:48 UTC
+Duration    : ~5.70 hours
+Frames      : 568 outbound from 10.4.19.136 (highest of all malicious IPs)
+Victim      : 10.4.19.136
+
+Secondary IcedID C2 server, running simultaneously with 104.168.53.18. Both
+were contacted within 3 seconds of each other, consistent with IcedID's
+documented dual-channel redundancy architecture. Despite having the highest
+frame count of any malicious IP in the capture, this server does not appear
+by name in Suricata high-severity alert labels -- which demonstrates why
+frame count and session duration must be used alongside alert severity for
+accurate C2 identification.
+
+--- 66.29.147.117 ---
+Phase       : Second-Stage Payload Delivery
+Domain      : cotecsecuritygroup.com
+Protocol    : HTTP port 80
+First seen  : 17:17:10 UTC
+Last seen   : 17:17:19 UTC
+Frames      : 6 total
+Victim      : 10.4.19.138 (laterally infected host)
+
+Single HTTP GET to /wicd/643d0491bcea1.zip, server responded HTTP 200
+application/zip. Random hex filename under /wicd/ is a documented IcedID
+second-stage delivery pattern. Connection was a single transaction, never
+repeated.
+
+--- 193.149.176.100 ---
+Phase       : Second-Stage / BackConnect C2
+Domain      : None (no SNI in TLS ClientHello -- bare IP TLS)
+Protocol    : HTTPS (TLS) port 443  (ephemeral ports: 51534, 51535, 51537)
+First seen  : 20:48:00 UTC (~5 hours after initial infection)
+Last seen   : 21:22:36 UTC (still active at capture end)
+Duration    : ~34 minutes observed, beaconing at capture close
+Frames      : 105 outbound from 10.4.19.136
+Interval    : ~60 seconds between beacons
+Victim      : 10.4.19.136
+
+Second-stage C2 that activates ~5 hours into the infection, consistent with
+IcedID downloading and executing a follow-on module (BackConnect, VNC, or
+Cobalt Strike). The absence of a TLS SNI name is a strong malicious indicator
+-- legitimate HTTPS services always use SNI for virtual hosting. Regular
+~60-second keepalive intervals confirm this is an active C2 beacon, not
+incidental traffic. Still beaconing when the capture ends.
+
+NOTE: High-volume Microsoft IPs (204.79.197.200, 204.79.197.203) are NOT
+included. Their TLS SNI names confirm them as legitimate -- www.bing.com,
+api.msn.com, www.msn.com -- representing normal Windows/Edge background traffic.
+
+COMPLETE SUMMARY:
+  80.77.25.175    | None (bare IP)               | Delivery Gate    |   6 frames
+  192.153.57.233  | skigimeetroc.com             | Payload Host     |  40 frames
+  104.168.53.18   | askamoshopsi + spakernakurs  | Primary C2       | 551 frames, 5.75 hrs
+  217.199.121.56  | skansnekssky.com             | Secondary C2     | 568 frames, 5.70 hrs
+  66.29.147.117   | cotecsecuritygroup.com       | 2nd Payload Host |   6 frames
+  193.149.176.100 | None (bare TLS)              | 2nd-Stage C2     | 105 frames, 60s beacon
+
+
+================================================================================
+Q7: What are the suspicious external IP addresses contacted, which might be
+    involved in C2 communication POST-INFECTION, after the payload was delivered?
+================================================================================
+
+ANSWER:
+  104.168.53.18
+  217.199.121.56
+  193.149.176.100
+
+EXPLANATION:
+
+Post-infection C2 means persistent communication that begins AFTER the payload
+executes and continues for extended periods -- as opposed to the one-time
+delivery transactions. Three IPs qualify.
+
+--- 104.168.53.18 ---
+Domains     : askamoshopsi.com + spakernakurs.com (rotation)
+Protocol    : HTTPS port 443
+First seen  : 15:36:41 UTC
+Last seen   : 21:22:21 UTC
+Duration    : ~5.75 hours
+Frames      : 551 outbound from 10.4.19.136
+
+Primary IcedID C2. Starts 60 seconds after payload download, meaning the loader
+executed, installed the implant, and immediately opened its C2 channel. Two
+domain aliases on one IP (askamoshopsi.com and spakernakurs.com) provide DNS
+blocking resilience. Sessions are persistent encrypted HTTPS, exchanging data
+at regular intervals for 5.75 hours.
+
+--- 217.199.121.56 ---
+Domain      : skansnekssky.com
+Protocol    : HTTPS port 443
+First seen  : 15:36:44 UTC
+Last seen   : 21:18:48 UTC
+Duration    : ~5.70 hours
+Frames      : 568 outbound from 10.4.19.136
+
+Secondary IcedID C2, operating simultaneously with 104.168.53.18. Both servers
+contacted within 3 seconds of each other -- IcedID's documented dual-channel
+redundancy. Highest frame count (568) of any malicious IP in the capture.
+This IP is absent from Suricata high-severity alert labels by name, which is
+a documented failure mode: the LLM systems tested in this research incorrectly
+omitted this IP from their C2 answers because no alert explicitly named it,
+despite it running the longest persistent malicious session in the PCAP.
+
+--- 193.149.176.100 ---
+Domain      : None (no TLS SNI -- bare IP TLS connection)
+Protocol    : HTTPS port 443
+First seen  : 20:48:00 UTC
+Last seen   : 21:22:36 UTC
+Duration    : ~34 minutes, active at capture end
+Frames      : 105 outbound from 10.4.19.136
+Interval    : ~60 seconds between sessions
+
+Second-stage C2, activating ~5 hours into the infection. Consistent with IcedID
+deploying a follow-on module (BackConnect, VNC, or Cobalt Strike beacon).
+Two strong malicious indicators: (1) no TLS SNI name -- legitimate HTTPS always
+uses SNI, malware connecting directly to a C2 IP often omits it; (2) regular
+~60-second beacon interval confirmed from frame timestamps.
+
+--- WHY DELIVERY IPs ARE EXCLUDED ---
+
+  80.77.25.175   : 6 frames, single HTTP GET to /main.php, HTTP 302 response,
+                   session terminated, never contacted again.
+                   This is a delivery gate, not a C2 server.
+
+  192.153.57.233 : 40 frames, single gzip download, completed in ~2 seconds,
+                   never contacted again.
+                   The Suricata alert fired because the downloaded content was
+                   malicious -- not because this IP maintains ongoing C2.
+                   Confusing this with a C2 server is the primary error made
+                   by the LLM systems evaluated in this research.
+
+  66.29.147.117  : 6 frames, single ZIP download to 10.4.19.138, never repeated.
+                   Second-stage payload delivery, not C2.
+
+SUMMARY:
+  104.168.53.18   | askamoshopsi.com + spakernakurs.com | 551 frames | 5.75 hrs
+  217.199.121.56  | skansnekssky.com                    | 568 frames | 5.70 hrs
+  193.149.176.100 | No SNI (bare TLS)                   | 105 frames | 60s beacon
+
+================================================================================
+END OF DOCUMENT
+================================================================================

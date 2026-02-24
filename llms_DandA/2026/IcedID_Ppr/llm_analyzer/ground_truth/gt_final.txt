@@ -1,0 +1,35 @@
+================================================================================
+Q1: What is the IP address of the potentially infected internal host in the LAN?
+ANSWER: 10.4.19.136
+================================================================================
+Q2: What is the hostname of the potentially infected machine in the LAN?
+ANSWER: DESKTOP-SFF9LJF
+================================================================================
+Q3: What is the Windows user account name of the potentially infected machine?
+ANSWER: csilva
+================================================================================
+Q4: What is likely the initial infection vector?
+ANSWER: HTTP GET to "hxxp://80.77.25[.]175/main[.]php"
+================================================================================
+Q5: What are the likely fake or suspicious domains / URLs for this attack?
+ANSWER:
+  80.77.25.175/main.php
+  skigimeetroc.com
+  askamoshopsi.com
+  spakernakurs.com
+  skansnekssky.com
+================================================================================
+Q6: What are the suspicious external IP addresses contacted, which might be involved in C2 communication? 
+    (ALL parts of the attack -- delivery infrastructure, post-delivery, etc.)
+ANSWER:
+  80.77.25.175          -- [HTTP GET to /main.php]          -- [Delivery Gate]
+  192.153.57.233        -- [skigimeetroc[.]com]             -- [Payload Delivery]
+  104.168.53.18         -- [askamoshopsi[.]com + spakernakurs[.]com] -- [Post-Infection C2]
+  217.199.121.56        -- [skansnekssky[.]com]             -- [Post-Infection C2]
+================================================================================
+Q7: What are the suspicious external IP addresses contacted, which might be involved in C2 communication POST-INFECTION, 
+    after the payload was delivered?
+ANSWER:
+  104.168.53.18         -- [askamoshopsi[.]com + spakernakurs[.]com] -- [Post-Infection C2]
+  217.199.121.56        -- [skansnekssky[.]com]             -- [Post-Infection C2]
+================================================================================
