@@ -10,15 +10,15 @@ cd "$SCRIPT_DIR/../../.." || exit 1
 # Now we're in llm_analyzer/, use paths relative to here
 python analyzer/modular_cli.py ../ioc_detection/query_responses/exp2_feb18 \
     --provider openai \
-    --model gpt-4 \
+    --model gpt-5.2 \
     --top-k 7 \
     --api-key-file config/keys/openai_key.txt \
     --cache cache/exp2_embeddings_feb18.pkl \
     --context-file config/ex1_network_context.txt \
     --questions-file config/questions_v5.txt \
-    --output reports/exp3_qp/7_chunks/final/openai_4.md \
+    --output reports/exp3_qp/7_chunks/final/openai_5_2.md \
     --debug
 
-echo "✅ Analysis complete! Check reports/openai_4_analysis**.md"
+echo "✅ Analysis complete! Check reports/openai_5_2_analysis**.md"
 
 
