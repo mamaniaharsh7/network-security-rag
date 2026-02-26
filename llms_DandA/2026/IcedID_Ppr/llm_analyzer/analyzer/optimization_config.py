@@ -45,12 +45,12 @@ class OptimizationConfig:
         # },
 
         'deepseek': {
-            'max_prompt_length': 20000,    # DeepSeek handles longer prompts well
+            'max_prompt_length': 25000,    # DeepSeek handles longer prompts well
             'max_context_chunks': 7,       # More context for better reasoning
             'chunk_preview_length': None,  # Use full chunks for reasoning
             'timeout_seconds': 300,        # 2 minute timeout
             'temperature': 0.1,            # Low for reasoning tasks
-            'max_tokens': 1500,            # Good for reasoning responses
+            'max_tokens': 2500,            # Good for reasoning responses
             'description': 'Full context for DeepSeek reasoning capabilities',
             'reasoning': 'DeepSeek excels at reasoning with complete context data'
         },
@@ -67,12 +67,12 @@ class OptimizationConfig:
         #},
 
         'openai': {
-            'max_prompt_length': 20000,    # GPT models handle long prompts
+            'max_prompt_length': 25000,    # GPT models handle long prompts
             'max_context_chunks': 7,       # Good context for quality
             'chunk_preview_length': None,  # Use full chunks for better analysis
             'timeout_seconds': 120,         # Fast API response
             'temperature': 0.1,            # Consistent for security analysis
-            'max_tokens': 1500,            # Standard response length
+            'max_tokens': 2500,            # Standard response length
             'description': 'Full context for optimal OpenAI analysis quality',
             'reasoning': 'GPT models perform better with complete context information'
         },
@@ -89,12 +89,12 @@ class OptimizationConfig:
         #},
        
         'anthropic': {
-            'max_prompt_length': 12000,    # Claude excels with long context
-            'max_context_chunks': 5,       # Excellent at handling more context
+            'max_prompt_length': 25000,    # Claude excels with long context
+            'max_context_chunks': 7,       # Excellent at handling more context
             'chunk_preview_length': None,  # Use full chunks for maximum analysis depth
             'timeout_seconds': 120,         # Usually fast but thorough
             'temperature': 0.1,            # Low for analytical tasks
-            'max_tokens': 1000,            # Claude can handle longer responses well
+            'max_tokens': 2500,            # Claude can handle longer responses well
             'description': 'Full context maximized for Claude\'s superior analysis',
             'reasoning': 'Claude handles complete context exceptionally well, no truncation needed'
         },
