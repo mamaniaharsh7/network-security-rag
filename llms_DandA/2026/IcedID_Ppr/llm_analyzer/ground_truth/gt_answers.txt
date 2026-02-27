@@ -11,11 +11,8 @@ ANSWER: csilva
 Q4: What is likely the initial infection vector?
 ANSWER: HTTP GET to "hxxp://80.77.25[.]175/main[.]php"
 ================================================================================
-Q5: What are the suspicious external IP addresses contacted, which might be involved in C2 communication? 
-    (ALL parts of the attack -- delivery infrastructure, post-delivery, etc.)
+Q5: What are the suspicious external IP addresses or domains contacted, which might be involved in C2 communication? 
 ANSWER:
-  80.77.25.175    | HTTP GET to /main.php        | Delivery Gate    
-  192.153.57.233  | skigimeetroc.com             | Payload Delivery
-  104.168.53.18   | askamoshopsi + spakernakurs  | Primary C2       
+  104.168.53.18   | askamoshopsi                 | Primary C2       
   217.199.121.56  | skansnekssky.com             | Secondary C2     
 ================================================================================

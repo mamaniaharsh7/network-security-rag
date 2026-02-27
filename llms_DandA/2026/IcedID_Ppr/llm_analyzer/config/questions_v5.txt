@@ -7,4 +7,4 @@ What is the IP address of the potentially infected internal host in the LAN?
 What is the hostname of the potentially infected machine in the LAN?
 What is the Windows user account name of the potentially infected machine in the LAN?
 What is likely the initial infection vector?
-What are the suspicious external IP addresses contacted, which might be involved in command-and-control (C2) communication? (involved in any part of the attack - delivery infrastructure, post-delivery, etc.)
+What are the suspicious external IP addresses or domains contacted, which might be involved in command-and-control (C2) communication?
