@@ -16,7 +16,7 @@ python analyzer/modular_cli.py ../ioc_detection/query_responses/exp2_feb18 \
     --cache cache/exp2_embeddings_feb18.pkl \
     --context-file config/ex1_network_context.txt \
     --questions-file config/questions_v5.txt \
-    --output reports/exp3_qp/7_chunks/final/anthropic.md \
+    --output reports/exp3_qp/7_chunks/final_Wdomain/anthropic.md \
     --debug
 
 echo "✅ Analysis complete! Check reports/anthropic_analysis**.md"
